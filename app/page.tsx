@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface VideoInfo {
   title: string;
@@ -22,13 +22,18 @@ export default function Home() {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
+  const [pasteHint, setPasteHint] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
       setUrl(text);
     } catch {
-      // clipboard not available
+      // Clipboard API blocked (HTTP context) — focus input so user can Ctrl+V
+      inputRef.current?.focus();
+      setPasteHint(true);
+      setTimeout(() => setPasteHint(false), 3000);
     }
   };
 
@@ -142,6 +147,7 @@ export default function Home() {
             }}
             onKeyDown={(e) => e.key === "Enter" && handleFetch()}
             className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-slate-500 rounded-xl px-4 py-3 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 transition"
+            ref={inputRef}
           />
           <button
             onClick={handlePaste}
@@ -164,6 +170,17 @@ export default function Home() {
             Paste
           </button>
         </div>
+
+        {pasteHint && (
+          <p className="text-xs text-slate-400 -mt-3 mb-3 text-right">
+            Press{" "}
+            <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">⌘V</kbd> /{" "}
+            <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">
+              Ctrl+V
+            </kbd>{" "}
+            to paste
+          </p>
+        )}
 
         {/* Fetch Button */}
         <button
@@ -380,8 +397,7 @@ export default function Home() {
       </p>
 
       <p className="mt-4 text-slate-700 text-xs text-center">
-        Built by{" "}
-        <span className="text-slate-500 font-medium">nirobnk</span>
+        Built by <span className="text-slate-500 font-medium">nirobnk</span>
       </p>
     </main>
   );
