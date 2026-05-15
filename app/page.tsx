@@ -378,6 +378,11 @@ export default function Home() {
           Terms of Use
         </a>
       </p>
+
+      <p className="mt-4 text-slate-700 text-xs text-center">
+        Built by{" "}
+        <span className="text-slate-500 font-medium">nirobnk</span>
+      </p>
     </main>
   );
 }
