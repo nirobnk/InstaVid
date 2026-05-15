@@ -12,7 +12,8 @@ const YT_DLP_BIN = path.join(
 );
 
 // ffmpeg: env var takes priority (e.g. local dev), then ffmpeg-static bundle (works on Vercel Linux)
-const FFMPEG_BIN = process.env.FFMPEG_PATH ?? ffmpegStatic ?? "/opt/homebrew/bin/ffmpeg";
+const FFMPEG_BIN =
+  process.env.FFMPEG_PATH ?? ffmpegStatic ?? "/opt/homebrew/bin/ffmpeg";
 
 const INSTAGRAM_URL_PATTERN =
   /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+/;
@@ -92,6 +93,12 @@ export async function POST(req: NextRequest) {
     "--no-check-certificates",
     "--no-warnings",
     "--no-playlist",
+    "--skip-download",
+    "--no-write-thumbnail",
+    "--socket-timeout",
+    "10",
+    "--retries",
+    "2",
     "--ffmpeg-location",
     FFMPEG_BIN,
     "--add-header",
