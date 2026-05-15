@@ -31,7 +31,7 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
-            cd ~/instavid
+            cd ~/InstaVid
             git pull origin main
             npm install --production=false
             npm run build
