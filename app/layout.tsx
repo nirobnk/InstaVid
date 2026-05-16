@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "Download Instagram Reels, Posts and Stories in HD. Free, fast, no watermark.",
   },
   alternates: {
-    canonical: "https://instavid.online",
+    canonical: "https://instavid.online/",
   },
   verification: {
     google: "ZSULVEulrO8kNMHS2BtbAempS2UIWWTHrKN39UzldlY",

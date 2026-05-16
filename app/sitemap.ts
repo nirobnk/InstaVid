@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://instavid.online",
+      url: "https://instavid.online/",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 1,
