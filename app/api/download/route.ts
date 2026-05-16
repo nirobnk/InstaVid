@@ -5,6 +5,7 @@ import os from "os";
 import fs from "fs";
 import crypto from "crypto";
 import ffmpegStatic from "ffmpeg-static";
+import { Redis } from "@upstash/redis";
 
 const YT_DLP_BIN = path.join(
   process.cwd(),
@@ -15,7 +16,8 @@ const YT_DLP_BIN = path.join(
 );
 
 // ffmpeg: env var takes priority (e.g. local dev), then ffmpeg-static bundle (works on Vercel Linux)
-const FFMPEG_BIN = process.env.FFMPEG_PATH ?? ffmpegStatic ?? "/opt/homebrew/bin/ffmpeg";
+const FFMPEG_BIN =
+  process.env.FFMPEG_PATH ?? ffmpegStatic ?? "/opt/homebrew/bin/ffmpeg";
 
 const INSTAGRAM_URL_PATTERN =
   /^https?:\/\/(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+/;
@@ -93,18 +95,22 @@ export async function POST(req: NextRequest) {
   // Unique temp file — yt-dlp writes the merged MP4 here
   const tmpFile = path.join(
     os.tmpdir(),
-    `instavid_${crypto.randomBytes(8).toString("hex")}.mp4`
+    `instavid_${crypto.randomBytes(8).toString("hex")}.mp4`,
   );
 
   const args: string[] = [
     "--no-playlist",
     "--no-check-certificates",
-    "--ffmpeg-location", FFMPEG_BIN,
+    "--ffmpeg-location",
+    FFMPEG_BIN,
     // Best quality: separate video+audio merged by ffmpeg into a proper MP4
-    "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best",
-    "--merge-output-format", "mp4",
+    "-f",
+    "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best",
+    "--merge-output-format",
+    "mp4",
     // Write to temp file (NOT stdout) so ffmpeg can properly place moov atom
-    "-o", tmpFile,
+    "-o",
+    tmpFile,
     "--add-header",
     "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "--add-header",
@@ -122,6 +128,20 @@ export async function POST(req: NextRequest) {
     // Wait for full download + merge to complete
     await downloadToTempFile(args);
 
+    // Increment download counter (fire-and-forget, does not block streaming)
+    if (
+      process.env.UPSTASH_REDIS_REST_URL &&
+      process.env.UPSTASH_REDIS_REST_TOKEN
+    ) {
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+      redis
+        .incr("download_count")
+        .catch((e) => console.error("[download] redis error:", e));
+    }
+
     const stat = fs.statSync(tmpFile);
     const fileStream = fs.createReadStream(tmpFile);
 
@@ -130,8 +150,8 @@ export async function POST(req: NextRequest) {
       start(controller) {
         fileStream.on("data", (chunk) =>
           controller.enqueue(
-            typeof chunk === "string" ? Buffer.from(chunk) : chunk
-          )
+            typeof chunk === "string" ? Buffer.from(chunk) : chunk,
+          ),
         );
         fileStream.on("end", () => {
           controller.close();

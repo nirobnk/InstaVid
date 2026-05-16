@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface VideoInfo {
   title: string;
@@ -23,7 +23,15 @@ export default function Home() {
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
   const [pasteHint, setPasteHint] = useState(false);
+  const [downloadCount, setDownloadCount] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((d) => setDownloadCount(d.downloads ?? null))
+      .catch(() => {});
+  }, []);
 
   const handlePaste = async () => {
     try {
@@ -90,6 +98,27 @@ export default function Home() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(objectUrl);
+
+      // Track download event in GA4
+      if (
+        typeof window !== "undefined" &&
+        typeof (window as unknown as { gtag?: unknown }).gtag === "function"
+      ) {
+        (window as unknown as { gtag: (...args: unknown[]) => void }).gtag(
+          "event",
+          "download_complete",
+          {
+            event_category: "engagement",
+            event_label: url.trim(),
+          },
+        );
+      }
+
+      // Refresh displayed download count
+      fetch("/api/stats")
+        .then((r) => r.json())
+        .then((d) => setDownloadCount(d.downloads ?? null))
+        .catch(() => {});
     } catch {
       setDownloadError("Download failed. Please try again.");
     } finally {
@@ -127,6 +156,11 @@ export default function Home() {
           Download Instagram Reels, Posts &amp; Stories — free, fast, no
           watermark.
         </p>
+        {downloadCount !== null && downloadCount > 0 && (
+          <p className="mt-3 text-sm font-medium text-pink-400">
+            🎉 {downloadCount.toLocaleString()} videos downloaded
+          </p>
+        )}
       </div>
 
       {/* Main Card */}
@@ -173,8 +207,18 @@ export default function Home() {
 
         {pasteHint && (
           <p className="text-xs text-slate-400 -mt-3 mb-3 text-right">
-            <span className="hidden sm:inline">Press <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">⌘V</kbd> / <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">Ctrl+V</kbd> to paste</span>
-            <span className="sm:hidden">Tap &amp; hold the input, then tap <strong>Paste</strong></span>
+            <span className="hidden sm:inline">
+              Press{" "}
+              <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">⌘V</kbd>{" "}
+              /{" "}
+              <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">
+                Ctrl+V
+              </kbd>{" "}
+              to paste
+            </span>
+            <span className="sm:hidden">
+              Tap &amp; hold the input, then tap <strong>Paste</strong>
+            </span>
           </p>
         )}
 
@@ -382,6 +426,60 @@ export default function Home() {
             <p className="text-slate-500 text-xs mt-1">{step.desc}</p>
           </div>
         ))}
+      </div>
+
+      {/* FAQ */}
+      <div className="mt-12 w-full max-w-xl">
+        <h2 className="text-white font-bold text-lg mb-4 text-center">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-3">
+          {[
+            {
+              q: "How do I download Instagram Reels?",
+              a: "Copy the Instagram Reel URL, paste it into InstaVid, click Fetch Video, then click Download MP4. The video saves to your device in HD.",
+            },
+            {
+              q: "Is InstaVid free to use?",
+              a: "Yes, InstaVid is completely free. No account, no subscription, and no hidden fees.",
+            },
+            {
+              q: "Does InstaVid add a watermark?",
+              a: "No. All downloads are clean HD MP4 files with no watermark added.",
+            },
+            {
+              q: "What types of Instagram content can I download?",
+              a: "InstaVid supports Instagram Reels, Posts (photos and videos), and Stories.",
+            },
+            {
+              q: "Does it work on mobile?",
+              a: "Yes. InstaVid works on iPhone, Android, and any desktop browser — no app install needed.",
+            },
+          ].map(({ q, a }) => (
+            <details
+              key={q}
+              className="bg-white/5 border border-white/10 rounded-xl p-4"
+            >
+              <summary className="text-white text-sm font-medium cursor-pointer list-none flex justify-between items-center gap-2">
+                {q}
+                <svg
+                  className="w-4 h-4 text-slate-400 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+              <p className="text-slate-400 text-sm mt-3">{a}</p>
+            </details>
+          ))}
+        </div>
       </div>
 
       <p className="mt-8 text-slate-600 text-xs text-center max-w-sm">
