@@ -43,6 +43,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://instavid.online",
   },
+  verification: {
+    google: "ZSULVEulrO8kNMHS2BtbAempS2UIWWTHrKN39UzldlY",
+  },
 };
 
 export default function RootLayout({
