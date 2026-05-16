@@ -38,5 +38,11 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# AI agent instruction files (local dev only)
+AGENTS.md
+CLAUDE.md
 next-env.d.ts
 .env*.local
+
+*keys
