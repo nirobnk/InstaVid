@@ -13,9 +13,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "InstaVid – Instagram Video Downloader",
+  title: "InstaVid – Free Instagram Video Downloader | Download Reels & Posts",
   description:
-    "Download Instagram Reels, Posts, and Stories for free. Fast, free, no watermark.",
+    "Download Instagram Reels, Posts, and Stories in HD for free. No watermark, no login required. Fast and easy Instagram video downloader — works on mobile and desktop.",
+  keywords: [
+    "instagram video downloader",
+    "download instagram reels",
+    "instagram reel downloader",
+    "save instagram video",
+    "instagram story downloader",
+    "download instagram posts",
+    "reels downloader",
+    "instavid",
+  ],
+  openGraph: {
+    title: "InstaVid – Free Instagram Video Downloader",
+    description:
+      "Download Instagram Reels, Posts and Stories in HD. Free, fast, no watermark.",
+    url: "https://instavid.online",
+    siteName: "InstaVid",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "InstaVid – Free Instagram Video Downloader",
+    description:
+      "Download Instagram Reels, Posts and Stories in HD. Free, fast, no watermark.",
+  },
+  alternates: {
+    canonical: "https://instavid.online",
+  },
 };
 
 export default function RootLayout({
