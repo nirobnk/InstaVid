@@ -173,12 +173,8 @@ export default function Home() {
 
         {pasteHint && (
           <p className="text-xs text-slate-400 -mt-3 mb-3 text-right">
-            Press{" "}
-            <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">⌘V</kbd> /{" "}
-            <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">
-              Ctrl+V
-            </kbd>{" "}
-            to paste
+            <span className="hidden sm:inline">Press <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">⌘V</kbd> / <kbd className="bg-white/10 px-1 py-0.5 rounded text-xs">Ctrl+V</kbd> to paste</span>
+            <span className="sm:hidden">Tap &amp; hold the input, then tap <strong>Paste</strong></span>
           </p>
         )}
 

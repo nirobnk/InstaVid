@@ -59,6 +59,79 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                name: "InstaVid",
+                url: "https://instavid.online/",
+                description:
+                  "Free Instagram video downloader. Download Instagram Reels, Posts and Stories in HD with no watermark and no login required.",
+                applicationCategory: "MultimediaApplication",
+                operatingSystem: "Any",
+                offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+                featureList: [
+                  "Download Instagram Reels",
+                  "Download Instagram Posts",
+                  "Download Instagram Stories",
+                  "HD video quality",
+                  "No watermark",
+                  "No login required",
+                  "Free to use",
+                ],
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: [
+                  {
+                    "@type": "Question",
+                    name: "How do I download Instagram Reels?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Copy the Instagram Reel URL, paste it into InstaVid, click Fetch Video, then click Download MP4. The video saves to your device in HD.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "Is InstaVid free to use?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Yes, InstaVid is completely free. No account, no subscription, and no hidden fees.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "Does InstaVid add a watermark?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "No. All downloads are clean HD MP4 files with no watermark added.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "What types of Instagram content can I download?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "InstaVid supports Instagram Reels, Posts (photos and videos), and Stories.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "Does InstaVid work on mobile?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Yes. InstaVid works on iPhone, Android, and any desktop browser — no app install needed.",
+                    },
+                  },
+                ],
+              },
+            ]),
+          }}
+        />
         {children}
       </body>
     </html>
